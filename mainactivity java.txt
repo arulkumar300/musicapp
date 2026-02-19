@@ -1,0 +1,80 @@
+package com.example.musicsserein;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.media.MediaPlayer;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.SeekBar;
+
+public class MainActivity extends AppCompatActivity {
+
+    MediaPlayer mediaPlayer;
+    Button playBtn, nextBtn, prevBtn;
+    SeekBar seekBar;
+
+    int currentSong = 0;
+
+    int[] songs = {
+            R.raw.song1,
+            R.raw.song2,
+            R.raw.song3
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        playBtn = findViewById(R.id.btnPlay);
+        nextBtn = findViewById(R.id.btnNext);
+        prevBtn = findViewById(R.id.btnPrev);
+        seekBar = findViewById(R.id.seekBar);
+
+        loadSong(currentSong);
+
+        playBtn.setOnClickListener(v -> {
+            if(mediaPlayer.isPlaying()){
+                mediaPlayer.pause();
+                playBtn.setText("Play");
+            }else{
+                mediaPlayer.start();
+                playBtn.setText("Pause");
+            }
+        });
+
+        nextBtn.setOnClickListener(v -> {
+            currentSong++;
+            if(currentSong >= songs.length){
+                currentSong = 0;
+            }
+            loadSong(currentSong);
+            mediaPlayer.start();
+            playBtn.setText("Pause");
+        });
+
+        prevBtn.setOnClickListener(v -> {
+            currentSong--;
+            if(currentSong < 0){
+                currentSong = songs.length - 1;
+            }
+            loadSong(currentSong);
+            mediaPlayer.start();
+            playBtn.setText("Pause");
+        });
+    }
+
+    private void loadSong(int index){
+        if(mediaPlayer != null){
+            mediaPlayer.release();
+        }
+        mediaPlayer = MediaPlayer.create(this, songs[index]);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mediaPlayer != null){
+            mediaPlayer.release();
+        }
+    }
+}
